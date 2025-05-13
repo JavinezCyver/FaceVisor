@@ -1,7 +1,7 @@
-import 'dart:io';
+import 'dart:typed_data';
+import 'dart:html' as html; 
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:vs_flutter_proj/AnalysisResult.dart';
+import 'AnalysisResult.dart';
 
 class UploadImageScreen extends StatefulWidget {
   const UploadImageScreen({super.key});
@@ -11,49 +11,51 @@ class UploadImageScreen extends StatefulWidget {
 }
 
 class _UploadImageScreenState extends State<UploadImageScreen> {
-  File? _image; // Store the selected image
-  final picker = ImagePicker(); // Initialize the image picker
+  Uint8List? _imageData;
 
-  Future<void> _pickImage() async {
-    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+  void _pickImage() {
+    final input = html.FileUploadInputElement()..accept = 'image/*';
+    input.click();
 
-    if (pickedFile != null) {
-      setState(() {
-        _image = File(pickedFile.path);
+    input.onChange.listen((event) {
+      final file = input.files!.first;
+      final reader = html.FileReader();
+
+      reader.readAsArrayBuffer(file);
+      reader.onLoadEnd.listen((event) {
+        setState(() {
+          _imageData = reader.result as Uint8List;
+        });
       });
-    }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Upload from Gallery'),
-        backgroundColor: Colors.white,
-        elevation: 0,
-      ),
-      body: Center(
+      backgroundColor: Colors.white,
+      body: SafeArea(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            const SizedBox(height: 20),
             Text(
-              'Submit a clear image of your face',
+              'Upload Image',
               style: TextStyle(
-                fontSize: 16,
+                fontSize: 24,
                 fontWeight: FontWeight.bold,
-                decoration: TextDecoration.underline,
-                color: Colors.blue,
+                color: Colors.black87,
               ),
             ),
-            SizedBox(height: 10),
+            SizedBox(height: 100),
             Container(
+              margin: EdgeInsets.symmetric(horizontal: 20),
               padding: EdgeInsets.all(20),
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(10),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.grey.withOpacity(0.2),
+                    color: Colors.grey.withOpacity(0.5),
                     spreadRadius: 2,
                     blurRadius: 5,
                   ),
@@ -64,7 +66,7 @@ class _UploadImageScreenState extends State<UploadImageScreen> {
                   GestureDetector(
                     onTap: _pickImage,
                     child: Container(
-                      padding: EdgeInsets.all(15),
+                      padding: EdgeInsets.all(20),
                       decoration: BoxDecoration(
                         color: Colors.black87,
                         borderRadius: BorderRadius.circular(8),
@@ -84,29 +86,40 @@ class _UploadImageScreenState extends State<UploadImageScreen> {
                   ),
                   SizedBox(height: 10),
                   Text(
-                    'Please make sure the image is clear',
-                    style: TextStyle(fontSize: 12, color: Colors.black54),
+                    'Please make sure the image is clear before proceeding',
+                    style: TextStyle(fontSize: 12, color: Colors.black87),
                   ),
                   SizedBox(height: 10),
-                  _image != null
-                      ? Image.file(
-                          _image!,
-                          height: 150,
-                          width: 150,
+                  _imageData != null
+                      ? Image.memory(
+                          _imageData!,
+                          height: 200,
+                          width: 200,
                           fit: BoxFit.cover,
                         )
-                      : Container(),
+                      : Text(
+                          '(No image file selected)',
+                          style: TextStyle(color: Colors.black54),
+                        ),
                 ],
               ),
             ),
             SizedBox(height: 15),
             ElevatedButton(
               onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => AnalysisResultScreen()),
-                ); // Submit button functionality (if needed)
+                if (_imageData != null) {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => AnalysisResultScreen()),
+                  );
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Please select an image first'),
+                    ),
+                  );
+                }
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.black87,
@@ -115,6 +128,29 @@ class _UploadImageScreenState extends State<UploadImageScreen> {
                     const EdgeInsets.symmetric(horizontal: 40, vertical: 14),
               ),
               child: Text('Submit'),
+            ),
+            const Spacer(),
+            Padding(
+              padding: const EdgeInsets.only(bottom: 16.0),
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.black87,
+                  foregroundColor: Colors.white,
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 40, vertical: 14),
+                ),
+                child: const Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.arrow_back, size: 20),
+                    SizedBox(width: 5),
+                    Text("Back"),
+                  ],
+                ),
+              ),
             ),
           ],
         ),

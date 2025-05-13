@@ -7,16 +7,20 @@ class AnalysisResultScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Analysis Result', style: TextStyle(color: Colors.black87)),
-        backgroundColor: Colors.white,
-        centerTitle: true,
-        elevation: 0,
-      ),
+      backgroundColor: Colors.white,
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            const Text(
+              'Analysis Result',
+              style: TextStyle(
+                fontSize: 28,
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+              ),
+            ),
+            const SizedBox(height: 20),
             Container(
               width: 300,
               height: 200,
@@ -25,7 +29,8 @@ class AnalysisResultScreen extends StatelessWidget {
                 borderRadius: BorderRadius.circular(10),
               ),
               child: const Center(
-                child: Text('📷 Captured Image', style: TextStyle(color: Colors.white)),
+                child: Text('📷 Captured Image',
+                    style: TextStyle(color: Colors.white)),
               ),
             ),
             const SizedBox(height: 20),
@@ -36,7 +41,10 @@ class AnalysisResultScreen extends StatelessWidget {
             const SizedBox(height: 10),
             const Text(
               'Dry Skin',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black87),
+              style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black87),
             ),
             const Padding(
               padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
@@ -50,7 +58,8 @@ class AnalysisResultScreen extends StatelessWidget {
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.black,
-                padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
               ),
               onPressed: () {
                 Navigator.pushReplacement(

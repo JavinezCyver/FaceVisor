@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'Captureimage.dart';
 import 'Uploadimage.dart';
-import 'main.dart'; // Make sure you have this file for logout
+import 'ViewHistory.dart';
+import 'disclaimer.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -12,27 +12,12 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  String username = "User";
+  String username = "";
 
-  @override
-  void initState() {
-    super.initState();
-    _loadUsername();
-  }
-
-  Future<void> _loadUsername() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    setState(() {
-      username = prefs.getString('username') ?? 'User';
-    });
-  }
-
-  Future<void> _logout() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.clear();
+  Future<void> _disc() async {
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (context) => const LoginScreen()), // Navigate to Login
+      MaterialPageRoute(builder: (context) => const Disclaimer()),
     );
   }
 
@@ -40,91 +25,141 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            const SizedBox(height: 20),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  'Welcome,\n$username',
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
+      body: Stack(
+        children: [
+          SafeArea(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                const SizedBox(height: 23),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: Align(
+                    alignment: Alignment.topLeft,
+                    child: Text(
+                      'FaceSkin Visor',
+                      style: const TextStyle(
+                        fontSize: 18,
+                        
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ),
                 ),
-              ),
-            ),
-            const SizedBox(height: 30),
-            const Text(
-              'Face',
-              style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
-            ),
-            const Text(
-              'SkinVisor',
-              style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 20),
-            Container(
-              margin: const EdgeInsets.symmetric(horizontal: 16),
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: Colors.black87,
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: const Column(
-                children: [
-                  Icon(Icons.menu, color: Colors.white),
-                  SizedBox(height: 10),
-                  Text(
-                    'View Past Analysis Reports',
-                    style: TextStyle(color: Colors.white),
+                const SizedBox(height: 30),
+                Center(
+                  child: const Text(
+                    'A Facial Image \n Analyzer App',
+                    style: TextStyle(
+                      fontSize: 37,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
                   ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 20),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                _buildActionButton(Icons.image, 'Upload Image', () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) =>  UploadImageScreen()),
-                  );
-                }),
-                const SizedBox(width: 10),
-                _buildActionButton(Icons.camera_alt, 'Capture Image', () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const CaptureImageScreen()),
-                  );
-                }),
+                ),
+                const SizedBox(height: 160),
+                Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 16),
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(10),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black26.withOpacity(0.5),
+                        blurRadius: 8,
+                        offset: Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    children: [
+                      // View History Button
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.black87,
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 24, vertical: 14),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => ViewHistory()),
+                          );
+                        },
+                        child: Column(
+                          children: const [
+                            Icon(Icons.menu, color: Colors.white),
+                            Text(
+                              'View History',
+                              style: TextStyle(color: Colors.white),
+                            ),
+                            SizedBox(
+                              height: 70,
+                              width: 180,
+                            ),
+                          ],
+                        ),
+                      ),
+                      // Upload Image and Capture Image Buttons
+                      const SizedBox(height: 20),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          _buildActionButton(Icons.image, 'Upload Image', () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => UploadImageScreen()),
+                            );
+                          }),
+                          const SizedBox(width: 10),
+                          _buildActionButton(Icons.camera_alt, 'Capture Image',
+                              () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      const CaptureImageScreen()),
+                            );
+                          }),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
               ],
             ),
-            const Spacer(),
-            _buildLogoutButton(),
-            const SizedBox(height: 20),
-          ],
-        ),
+          ),
+          Positioned(
+            top: 20,
+            right: 20,
+            child: _buildDiscButton(),
+          ),
+        ],
       ),
     );
   }
 
-  Widget _buildActionButton(IconData icon, String label, VoidCallback onPressed) {
+  Widget _buildActionButton(
+      IconData icon, String label, VoidCallback onPressed) {
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
         backgroundColor: Colors.black87,
         foregroundColor: Colors.white,
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10), // Smaller border radius
+        ),
       ),
       onPressed: onPressed,
       child: Column(
         children: [
-          Icon(icon, size: 24, color: Colors.white,),
+          Icon(icon, size: 24, color: Colors.white),
           const SizedBox(height: 5),
           Text(label),
         ],
@@ -132,20 +167,20 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildLogoutButton() {
+  Widget _buildDiscButton() {
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
         backgroundColor: Colors.black87,
         foregroundColor: Colors.white,
-        padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 14),
+        padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
       ),
-      onPressed: _logout,
+      onPressed: _disc,
       child: const Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.logout, size: 20),
+          Icon(Icons.add_alert_rounded, size: 20),
           SizedBox(width: 5),
-          Text('Log Out'),
+          Text('!')
         ],
       ),
     );
