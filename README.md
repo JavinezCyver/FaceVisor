@@ -1,2 +1,3 @@
-# FaceVisor
-School purposes only
+# faceskinvisors
+
+A new Flutter project.
